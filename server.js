@@ -45,4 +45,31 @@ app.post('/users', async (req, res) => {
   
 })
 
+// Create /login Endpoint
+app.post('/users/login', async (req,res) => {
+  // 1st, get our user => try to find particular user based on the name we passed in.
+  // // => find the matching name by using 'array.find()' method
+  const user = users.find(user => user.name =req.body.name)
+  // 1.A: Conditional Check
+  if(user == null) {
+    // 1.A.1: if the user does NOT exist, send a error message
+    return res.status(400).send('Cannot find user')
+  }
+  // 2nd, run 'try ...catch' to do the comparison for our password
+  try {
+    // conditonal check: if the password are the same
+    if(await bcrypt.compare(req.body.password, user.password)) {
+      // if the password are the same, => the user will be logged In
+      res.send('Success')
+    } else {
+      // if the password are NOT the same, => the user will be NOT allowed to log in
+      res.send('Not Allowed')
+    }
+
+  }catch {
+    // catch the error by sending the status code && corresponding error messages
+    res.status(500).send()
+  }
+})
+
 app.listen(3003)
